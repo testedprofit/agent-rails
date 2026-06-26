@@ -38,7 +38,9 @@ Run Agent Rails inside this repo:
 
 ```bash
 python -m pip install -e .
-agent-rails check --report agent-rails-report.md
+python -m unittest discover
+agent-rails check --strict --report agent-rails-report.md
+agent-rails --version
 ```
 
 Install from GitHub into another project:
@@ -103,6 +105,8 @@ Use `.agent-rails.json` to ignore expected risk vocabulary in policy files, gene
 This starter includes `.github/workflows/agent-rails.yml`. It installs the package, runs the checks, and uploads the markdown report as a workflow artifact.
 
 The default workflow runs full-repo strict checks. Changed-file mode is available for teams that want PR-focused signal after they wire a changed-file list into their workflow.
+
+For local review commands, see `docs/QA.md`.
 
 ## Project Shape
 

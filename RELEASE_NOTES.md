@@ -10,9 +10,10 @@ Initial public baseline for Agent Rails.
 - Added `agent-rails check` to validate required docs, gate status blocks, obvious secret-looking values, and high-risk workflow terms.
 - Added strict mode so warnings can fail CI.
 - Added changed-file mode through `--changed-files` and `--changed-files-list`.
+- Changed-file mode now warns when no provided files resolve inside the project.
 - Added GitHub Actions workflow with tests and strict guardrail checks.
 - Added visible `.agent-rails.json` config for expected risk vocabulary.
-- Added unit tests for parser behavior, strict mode, generated metadata skips, and changed-file scanning.
+- Added unit tests for parser behavior, strict mode, generated metadata skips, initialized-project behavior, and changed-file scanning.
 
 ### Not Included
 

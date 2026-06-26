@@ -94,10 +94,20 @@ class AgentRailsConfig:
 def run_checks(root: Path, changed_files: Iterable[str | Path] | None = None) -> list[CheckResult]:
     root = root.resolve()
     config, config_results = load_config(root)
-    scan_paths = resolve_scan_paths(root, changed_files)
+    changed_file_inputs = tuple(changed_files) if changed_files is not None else None
+    scan_paths = resolve_scan_paths(root, changed_file_inputs)
     results: list[CheckResult] = []
     if scan_paths is not None:
-        results.append(CheckResult("scope", "PASS", f"Changed-file mode enabled for {len(scan_paths)} existing in-root file(s)."))
+        if not scan_paths:
+            results.append(CheckResult("scope", "WARN", "Changed-file mode was enabled but no existing in-root files were provided."))
+        else:
+            results.append(
+                CheckResult(
+                    "scope",
+                    "PASS",
+                    f"Changed-file mode enabled for {len(scan_paths)} existing in-root file(s).",
+                )
+            )
     results.extend(config_results)
     results.extend(check_required_docs(root))
     results.extend(check_gate_status_sections(root, scan_paths=scan_paths))
@@ -207,7 +217,7 @@ def check_gate_status_sections(root: Path, *, scan_paths: tuple[Path, ...] | Non
     elif scoped:
         results.append(CheckResult("gate-status", "PASS", "No Current Gate Status sections found in changed files."))
     else:
-        results.append(CheckResult("gate-status", "WARN", "No Current Gate Status sections found. Add one for substantial gated work."))
+        results.append(CheckResult("gate-status", "PASS", "No Current Gate Status sections found; none to validate."))
 
     return results
 
@@ -406,13 +416,6 @@ def relative_path(root: Path, path: Path) -> str:
 
 def line_for_offset(text: str, offset: int) -> int:
     return text.count("\n", 0, offset) + 1
-
-
-def line_for_heading(text: str, heading: str) -> int:
-    offset = text.find(heading)
-    if offset == -1:
-        return 1
-    return line_for_offset(text, offset)
 
 
 def matches_any(path: str, patterns: tuple[str, ...]) -> bool:

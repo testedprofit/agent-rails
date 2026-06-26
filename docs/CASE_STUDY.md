@@ -40,7 +40,7 @@ Changed-file mode keeps required project-doc checks global while scoping gate, s
 
 - Public repo: https://github.com/testedprofit/agent-rails
 - CI status: latest run passing.
-- Tests: 11 local unit tests after changed-file mode.
+- Tests: 13 local unit tests after QA hardening.
 - Roadmap issues: changed-file mode, PR comments, severity config, policy packs, and evidence checklists.
 
 ## Resume Framing

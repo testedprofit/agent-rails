@@ -26,6 +26,12 @@ jobs:
       - name: Run tests
         run: python -m unittest discover
 
+      - name: Compile Python files
+        run: python -m compileall -q src tests
+
+      - name: Check CLI version
+        run: agent-rails --version
+
       - name: Run checks
         run: agent-rails check --strict --report agent-rails-report.md
 

@@ -6,6 +6,7 @@ import argparse
 from pathlib import Path
 import sys
 
+from . import __version__
 from .checks import render_report, run_checks
 from .templates import TEMPLATES
 
@@ -33,6 +34,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="agent-rails",
         description="Portable guardrails for AI-assisted repositories.",
     )
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     subparsers = parser.add_subparsers(dest="command")
 
     init_parser = subparsers.add_parser("init", help="Install Agent Rails markdown files into a project.")

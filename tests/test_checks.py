@@ -16,6 +16,15 @@ from agent_rails.templates import TEMPLATES  # noqa: E402
 
 
 class AgentRailsChecksTest(unittest.TestCase):
+    def test_template_project_without_gate_status_has_no_failures_or_warnings(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_templates(root)
+
+            results = run_checks(root)
+
+        self.assertFalse([result for result in results if result.is_failure or result.is_warning])
+
     def test_template_project_has_no_failures(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -153,6 +162,15 @@ class AgentRailsChecksTest(unittest.TestCase):
             results = run_checks(root, changed_files=("safe.md",))
 
         self.assertFalse(any(result.name == "risk-review" and result.path == "README.md" for result in results))
+
+    def test_changed_file_mode_warns_when_no_files_resolve(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_templates(root)
+
+            results = run_checks(root, changed_files=("missing.md",))
+
+        self.assertTrue(any(result.name == "scope" and result.is_warning for result in results))
 
     def test_changed_files_list_loader_reads_newline_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
