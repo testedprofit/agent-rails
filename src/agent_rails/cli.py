@@ -17,7 +17,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "init":
         return init_command(Path(args.path), force=args.force)
     if args.command == "check":
-        return check_command(Path(args.path), report_path=args.report, strict=args.strict)
+        try:
+            changed_files = load_changed_files(args.changed_files, args.changed_files_list)
+        except OSError as error:
+            print(f"error: could not read changed files list: {error}", file=sys.stderr)
+            return 2
+        return check_command(Path(args.path), report_path=args.report, strict=args.strict, changed_files=changed_files)
 
     parser.print_help()
     return 2
@@ -38,6 +43,15 @@ def build_parser() -> argparse.ArgumentParser:
     check_parser.add_argument("path", nargs="?", default=".", help="Project path to check.")
     check_parser.add_argument("--report", help="Write a markdown report to this path.")
     check_parser.add_argument("--strict", action="store_true", help="Treat warnings as failures.")
+    check_parser.add_argument(
+        "--changed-files",
+        nargs="*",
+        help="Limit gate, sensitive-value, and risk scans to these changed files while keeping required-doc checks global.",
+    )
+    check_parser.add_argument(
+        "--changed-files-list",
+        help="Read newline-delimited changed files from this path.",
+    )
 
     return parser
 
@@ -64,13 +78,19 @@ def init_command(path: Path, *, force: bool) -> int:
     return 0
 
 
-def check_command(path: Path, *, report_path: str | None, strict: bool) -> int:
+def check_command(
+    path: Path,
+    *,
+    report_path: str | None,
+    strict: bool,
+    changed_files: tuple[str, ...] | None = None,
+) -> int:
     root = path.resolve()
     if not root.exists():
         print(f"error: path does not exist: {root}", file=sys.stderr)
         return 2
 
-    results = run_checks(root)
+    results = run_checks(root, changed_files=changed_files)
     report = render_report(results)
     failures = [result for result in results if result.is_failure]
     warnings = [result for result in results if result.is_warning]
@@ -92,6 +112,18 @@ def check_command(path: Path, *, report_path: str | None, strict: bool) -> int:
     if failures or (strict and warnings):
         return 1
     return 0
+
+
+def load_changed_files(changed_files: list[str] | None, changed_files_list: str | None) -> tuple[str, ...] | None:
+    if changed_files is None and changed_files_list is None:
+        return None
+
+    loaded: list[str] = list(changed_files or [])
+    if changed_files_list:
+        lines = Path(changed_files_list).read_text(encoding="utf-8").splitlines()
+        loaded.extend(line.strip() for line in lines if line.strip())
+
+    return tuple(loaded)
 
 
 if __name__ == "__main__":

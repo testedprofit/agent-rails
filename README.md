@@ -1,6 +1,8 @@
 # Agent Rails
 
 [![Agent Rails](https://github.com/testedprofit/agent-rails/actions/workflows/agent-rails.yml/badge.svg)](https://github.com/testedprofit/agent-rails/actions/workflows/agent-rails.yml)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 Portable guardrails for AI-assisted repositories.
 
@@ -56,6 +58,21 @@ failures=0 warnings=0
 
 The markdown report includes failures, warnings, passes, file paths, and line numbers when available.
 
+## Changed-File Mode
+
+For pull request workflows, use changed-file mode to keep required-doc checks global while limiting gate, secret, and risk scans to files touched by the PR:
+
+```bash
+agent-rails check --strict --changed-files README.md src/example.py
+```
+
+Or read changed files from a newline-delimited file:
+
+```bash
+git diff --name-only origin/main...HEAD > changed-files.txt
+agent-rails check --strict --changed-files-list changed-files.txt
+```
+
 ## What It Checks
 
 - Required operating docs are present:
@@ -85,6 +102,8 @@ Use `.agent-rails.json` to ignore expected risk vocabulary in policy files, gene
 
 This starter includes `.github/workflows/agent-rails.yml`. It installs the package, runs the checks, and uploads the markdown report as a workflow artifact.
 
+The default workflow runs full-repo strict checks. Changed-file mode is available for teams that want PR-focused signal after they wire a changed-file list into their workflow.
+
 ## Project Shape
 
 ```text
@@ -96,6 +115,7 @@ This starter includes `.github/workflows/agent-rails.yml`. It installs the packa
 ├── src/agent_rails/
 ├── tests/
 ├── docs/
+├── RELEASE_NOTES.md
 └── .github/workflows/agent-rails.yml
 ```
 

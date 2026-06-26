@@ -91,20 +91,45 @@ class AgentRailsConfig:
     risk_ignore: tuple[str, ...] = ()
 
 
-def run_checks(root: Path) -> list[CheckResult]:
+def run_checks(root: Path, changed_files: Iterable[str | Path] | None = None) -> list[CheckResult]:
     root = root.resolve()
     config, config_results = load_config(root)
+    scan_paths = resolve_scan_paths(root, changed_files)
     results: list[CheckResult] = []
+    if scan_paths is not None:
+        results.append(CheckResult("scope", "PASS", f"Changed-file mode enabled for {len(scan_paths)} existing in-root file(s)."))
     results.extend(config_results)
     results.extend(check_required_docs(root))
-    results.extend(check_gate_status_sections(root))
-    results.extend(scan_for_secrets(root))
-    results.extend(scan_for_risk_terms(root, risk_ignore=config.risk_ignore))
+    results.extend(check_gate_status_sections(root, scan_paths=scan_paths))
+    results.extend(scan_for_secrets(root, scan_paths=scan_paths))
+    results.extend(scan_for_risk_terms(root, risk_ignore=config.risk_ignore, scan_paths=scan_paths))
 
     if not any(result.is_failure for result in results):
         results.append(CheckResult("summary", "PASS", "No blocking Agent Rails findings found."))
 
     return results
+
+
+def resolve_scan_paths(root: Path, changed_files: Iterable[str | Path] | None) -> tuple[Path, ...] | None:
+    if changed_files is None:
+        return None
+
+    paths: list[Path] = []
+    seen: set[Path] = set()
+    for raw_path in changed_files:
+        path = Path(raw_path)
+        candidate = path if path.is_absolute() else root / path
+        try:
+            resolved = candidate.resolve()
+            resolved.relative_to(root)
+        except (OSError, ValueError):
+            continue
+
+        if resolved.exists() and resolved.is_file() and resolved not in seen:
+            paths.append(resolved)
+            seen.add(resolved)
+
+    return tuple(paths)
 
 
 def load_config(root: Path) -> tuple[AgentRailsConfig, list[CheckResult]]:
@@ -146,11 +171,12 @@ def check_required_docs(root: Path) -> list[CheckResult]:
     return results
 
 
-def check_gate_status_sections(root: Path) -> list[CheckResult]:
+def check_gate_status_sections(root: Path, *, scan_paths: tuple[Path, ...] | None = None) -> list[CheckResult]:
     results: list[CheckResult] = []
     found_section = False
+    scoped = scan_paths is not None
 
-    for path in iter_text_files(root):
+    for path in iter_text_files(root, scan_paths=scan_paths):
         if path.suffix.lower() != ".md":
             continue
 
@@ -178,16 +204,18 @@ def check_gate_status_sections(root: Path) -> list[CheckResult]:
     if found_section:
         if not any(result.name == "gate-status" and result.is_failure for result in results):
             results.append(CheckResult("gate-status", "PASS", "All Current Gate Status sections are complete."))
+    elif scoped:
+        results.append(CheckResult("gate-status", "PASS", "No Current Gate Status sections found in changed files."))
     else:
         results.append(CheckResult("gate-status", "WARN", "No Current Gate Status sections found. Add one for substantial gated work."))
 
     return results
 
 
-def scan_for_secrets(root: Path, max_findings: int = 50) -> list[CheckResult]:
+def scan_for_secrets(root: Path, *, scan_paths: tuple[Path, ...] | None = None, max_findings: int = 50) -> list[CheckResult]:
     results: list[CheckResult] = []
 
-    for path in iter_text_files(root):
+    for path in iter_text_files(root, scan_paths=scan_paths):
         text = read_text(path)
         if text is None:
             continue
@@ -214,10 +242,16 @@ def scan_for_secrets(root: Path, max_findings: int = 50) -> list[CheckResult]:
     return results
 
 
-def scan_for_risk_terms(root: Path, *, risk_ignore: tuple[str, ...] = (), max_findings: int = 25) -> list[CheckResult]:
+def scan_for_risk_terms(
+    root: Path,
+    *,
+    risk_ignore: tuple[str, ...] = (),
+    scan_paths: tuple[Path, ...] | None = None,
+    max_findings: int = 25,
+) -> list[CheckResult]:
     results: list[CheckResult] = []
 
-    for path in iter_text_files(root):
+    for path in iter_text_files(root, scan_paths=scan_paths):
         rel_path = relative_path(root, path)
         if matches_any(rel_path, risk_ignore):
             continue
@@ -287,8 +321,9 @@ def render_report(results: Iterable[CheckResult]) -> str:
     return "\n".join(lines)
 
 
-def iter_text_files(root: Path) -> Iterable[Path]:
-    for path in root.rglob("*"):
+def iter_text_files(root: Path, *, scan_paths: tuple[Path, ...] | None = None) -> Iterable[Path]:
+    candidates = root.rglob("*") if scan_paths is None else scan_paths
+    for path in candidates:
         if not path.is_file():
             continue
 

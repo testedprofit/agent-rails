@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from agent_rails.checks import render_report, run_checks  # noqa: E402
-from agent_rails.cli import check_command  # noqa: E402
+from agent_rails.cli import check_command, load_changed_files  # noqa: E402
 from agent_rails.templates import TEMPLATES  # noqa: E402
 
 
@@ -128,6 +128,40 @@ class AgentRailsChecksTest(unittest.TestCase):
             results = run_checks(root)
 
         self.assertFalse(any(result.name == "risk-review" and ".egg-info" in (result.path or "") for result in results))
+
+    def test_changed_file_mode_scans_listed_risk_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_templates(root)
+            (root / "README.md").write_text("Production deploy steps go here.\n", encoding="utf-8")
+            (root / "safe.md").write_text("Plain documentation.\n", encoding="utf-8")
+
+            results = run_checks(root, changed_files=("README.md",))
+
+        self.assertTrue(any(result.name == "scope" for result in results))
+        self.assertTrue(
+            any(result.name == "risk-review" and result.path == "README.md" and result.is_warning for result in results)
+        )
+
+    def test_changed_file_mode_ignores_unlisted_risk_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_templates(root)
+            (root / "README.md").write_text("Production deploy steps go here.\n", encoding="utf-8")
+            (root / "safe.md").write_text("Plain documentation.\n", encoding="utf-8")
+
+            results = run_checks(root, changed_files=("safe.md",))
+
+        self.assertFalse(any(result.name == "risk-review" and result.path == "README.md" for result in results))
+
+    def test_changed_files_list_loader_reads_newline_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            list_path = Path(temp_dir) / "changed-files.txt"
+            list_path.write_text("README.md\n\nsrc/example.py\n", encoding="utf-8")
+
+            changed_files = load_changed_files(["docs/one.md"], str(list_path))
+
+        self.assertEqual(changed_files, ("docs/one.md", "README.md", "src/example.py"))
 
 
 def write_templates(root: Path) -> None:

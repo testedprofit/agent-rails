@@ -11,7 +11,8 @@
 
 ## 0.2 - Pull Request Awareness
 
-- Check only changed files in CI.
+- Check only changed files from CLI input or a newline-delimited file.
+- Wire changed-file mode into a reusable CI example.
 - Add PR comment summary.
 - Support a repo-local ignore file.
 - Add severity configuration.
@@ -37,4 +38,3 @@
 - Stop conditions: No external release commitments without maintainer approval.
 - Next safe action: Open GitHub issues for 0.2 items after the starter repo is reviewed.
 - Next prompt: Convert the roadmap into tracked GitHub issues.
-
