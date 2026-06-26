@@ -114,4 +114,3 @@ Agent Rails is intentionally lightweight. It is not a complete secret scanner, v
 ## Project Thesis
 
 Speed without gates creates hidden risk. Safety without direction creates churn. Gated progress gives teams useful, safe, reviewable action.
-

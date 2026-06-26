@@ -1,6 +1,6 @@
 ## Summary
 
-- 
+-
 
 ## Validation
 
@@ -15,4 +15,3 @@
 - Human review required:
 - Stop conditions:
 - Next safe action:
-

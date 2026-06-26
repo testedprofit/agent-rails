@@ -28,4 +28,3 @@ body:
       description: Python version, OS, and Agent Rails version or commit.
     validations:
       required: false
-
