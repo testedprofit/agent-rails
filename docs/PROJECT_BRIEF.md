@@ -43,11 +43,10 @@ Agent Rails is useful because it converts project behavior rules into runnable c
 - Gated progress docs are present and coherent.
 
 ## Current Gate Status
-- Gate name: Implementation
+- Gate name: Launch polish
 - Status: READY FOR REVIEW
-- Evidence produced: Starter repo files, CLI, tests, GitHub workflow, and docs.
+- Evidence produced: Starter repo files, CLI, tests, GitHub workflow, docs, README polish, issue templates, and launch checklist.
 - Human review required: Yes before publishing to package registries or using as an official policy gate.
 - Stop conditions: Do not publish, deploy, create external services, or claim complete security coverage without review.
-- Next safe action: Run tests locally and inspect the generated report.
-- Next prompt: Review Agent Rails and tighten any rules you want enforced in your own repos.
-
+- Next safe action: Review the public GitHub repo page and roadmap issues.
+- Next prompt: Prepare release notes for v0.1.0.

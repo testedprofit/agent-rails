@@ -29,6 +29,10 @@ classifiers = [
 [project.scripts]
 agent-rails = "agent_rails.cli:main"
 
+[project.urls]
+Homepage = "https://github.com/testedprofit/agent-rails"
+Issues = "https://github.com/testedprofit/agent-rails/issues"
+Repository = "https://github.com/testedprofit/agent-rails"
+
 [tool.setuptools.packages.find]
 where = ["src"]
-

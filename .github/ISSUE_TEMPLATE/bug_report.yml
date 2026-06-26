@@ -1,0 +1,31 @@
+name: Bug report
+description: Report incorrect or surprising Agent Rails behavior.
+title: "[bug] "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the behavior and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Include commands, file snippets, and the report output if possible. Do not include real secrets.
+      placeholder: |
+        1. Run ...
+        2. See ...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Python version, OS, and Agent Rails version or commit.
+    validations:
+      required: false
+
