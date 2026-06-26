@@ -1,0 +1,8 @@
+{
+  "risk_ignore": [
+    "src/agent_rails/checks.py",
+    "src/agent_rails/templates.py",
+    "tests/test_checks.py"
+  ]
+}
+
