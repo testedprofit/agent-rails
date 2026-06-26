@@ -117,6 +117,18 @@ class AgentRailsChecksTest(unittest.TestCase):
 
         self.assertEqual(exit_code, 1)
 
+    def test_generated_egg_info_is_skipped(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_templates(root)
+            egg_info = root / "src" / "agent_rails.egg-info"
+            egg_info.mkdir(parents=True)
+            (egg_info / "PKG-INFO").write_text("Production deploy metadata.\n", encoding="utf-8")
+
+            results = run_checks(root)
+
+        self.assertFalse(any(result.name == "risk-review" and ".egg-info" in (result.path or "") for result in results))
+
 
 def write_templates(root: Path) -> None:
     for name, content in TEMPLATES.items():

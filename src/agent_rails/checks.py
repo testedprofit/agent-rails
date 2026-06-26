@@ -300,7 +300,7 @@ def iter_text_files(root: Path) -> Iterable[Path]:
         except ValueError:
             relative_parts = path.parts
 
-        if any(part in SKIP_DIR_NAMES for part in relative_parts):
+        if any(part in SKIP_DIR_NAMES or part.endswith(".egg-info") for part in relative_parts):
             continue
 
         try:
