@@ -2,7 +2,17 @@
   "risk_ignore": [
     ".github/ISSUE_TEMPLATE/*.yml",
     ".github/PULL_REQUEST_TEMPLATE.md",
+    "AGENTS.md",
+    "AI_START_HERE.md",
+    "GATED_AI_PROGRESS_PROTOCOL.md",
+    "MASTER_AI_PROJECT_OPERATING_SYSTEM_PERSONAL.md",
+    "README.md",
+    "docs/CONTRIBUTING.md",
     "docs/LAUNCH_CHECKLIST.md",
+    "docs/PROJECT_BRIEF.md",
+    "docs/ROADMAP.md",
+    "docs/SECURITY.md",
+    "examples/sample-gate-report.md",
     "src/agent_rails/checks.py",
     "src/agent_rails/templates.py",
     "tests/test_checks.py"

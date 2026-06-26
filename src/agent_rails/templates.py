@@ -2,7 +2,12 @@
 
 TEMPLATES: dict[str, str] = {
     ".agent-rails.json": """{
-  "risk_ignore": []
+  "risk_ignore": [
+    "AGENTS.md",
+    "AI_START_HERE.md",
+    "GATED_AI_PROGRESS_PROTOCOL.md",
+    "MASTER_AI_PROJECT_OPERATING_SYSTEM_PERSONAL.md"
+  ]
 }
 """,
     "AGENTS.md": """# AGENTS.md - Project AI Instructions

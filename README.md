@@ -64,8 +64,8 @@ The markdown report includes failures, warnings, passes, file paths, and line nu
   - `MASTER_AI_PROJECT_OPERATING_SYSTEM_PERSONAL.md`
   - `GATED_AI_PROGRESS_PROTOCOL.md`
 - Any real `## Current Gate Status` section has all required fields.
-- Secret-looking values are not committed.
-- High-risk terms are surfaced for review, including MainNet, payments, production deploys, wallet/signing paths, package publishing, credentials, and automation.
+- Obvious secret-looking values are flagged before they are committed.
+- High-risk terms are surfaced for review unless explicitly ignored in `.agent-rails.json`, including MainNet, payments, production deploys, wallet/signing paths, package publishing, credentials, and automation.
 
 ## Config
 
@@ -74,6 +74,7 @@ Use `.agent-rails.json` to ignore expected risk vocabulary in policy files, gene
 ```json
 {
   "risk_ignore": [
+    "AGENTS.md",
     "src/policy/*.py",
     "tests/*.py"
   ]
@@ -109,7 +110,7 @@ Agent Rails is especially useful for:
 
 ## Boundaries
 
-Agent Rails is intentionally lightweight. It is not a complete secret scanner, vulnerability scanner, compliance framework, or substitute for security review. It is a practical repo rail: it catches obvious problems, makes risk visible, and nudges work back into a reviewable path.
+Agent Rails is intentionally lightweight. It is not a complete secret scanner, vulnerability scanner, compliance framework, or substitute for security review. It is a practical repo rail: it catches obvious problems, makes risk visible, and nudges work back into a reviewable path. Files above 1 MB and unreadable/binary files are skipped by the current scanner.
 
 ## Project Thesis
 

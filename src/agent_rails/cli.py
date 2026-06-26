@@ -85,6 +85,10 @@ def check_command(path: Path, *, report_path: str | None, strict: bool) -> int:
         location = f" {result.path}:{result.line}" if result.path and result.line else ""
         print(f"FAIL {result.name}{location} - {result.message}")
 
+    for result in warnings[:10]:
+        location = f" {result.path}:{result.line}" if result.path and result.line else ""
+        print(f"WARN {result.name}{location} - {result.message}")
+
     if failures or (strict and warnings):
         return 1
     return 0
@@ -92,4 +96,3 @@ def check_command(path: Path, *, report_path: str | None, strict: bool) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

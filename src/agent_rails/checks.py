@@ -69,16 +69,6 @@ RISK_PATTERNS = (
     ("automation", re.compile(r"\b(automation|scheduled task|webhook)\b", re.IGNORECASE)),
 )
 
-RISK_DOC_EXEMPTIONS = set(REQUIRED_DOCS) | {
-    "README.md",
-    "docs/PROJECT_BRIEF.md",
-    "docs/SECURITY.md",
-    "docs/ROADMAP.md",
-    "docs/CONTRIBUTING.md",
-    "examples/sample-gate-report.md",
-}
-
-
 @dataclass(frozen=True)
 class CheckResult:
     name: str
@@ -131,7 +121,9 @@ def load_config(root: Path) -> tuple[AgentRailsConfig, list[CheckResult]]:
     if not isinstance(risk_ignore, list) or not all(isinstance(item, str) for item in risk_ignore):
         return AgentRailsConfig(), [CheckResult("config", "FAIL", "Config key 'risk_ignore' must be a list of strings.", ".agent-rails.json")]
 
-    return AgentRailsConfig(risk_ignore=tuple(risk_ignore)), [CheckResult("config", "PASS", "Loaded .agent-rails.json.", ".agent-rails.json")]
+    return AgentRailsConfig(risk_ignore=tuple(risk_ignore)), [
+        CheckResult("config", "PASS", f"Loaded .agent-rails.json with {len(risk_ignore)} risk ignore pattern(s).", ".agent-rails.json")
+    ]
 
 
 def check_required_docs(root: Path) -> list[CheckResult]:
@@ -227,8 +219,6 @@ def scan_for_risk_terms(root: Path, *, risk_ignore: tuple[str, ...] = (), max_fi
 
     for path in iter_text_files(root):
         rel_path = relative_path(root, path)
-        if rel_path in RISK_DOC_EXEMPTIONS:
-            continue
         if matches_any(rel_path, risk_ignore):
             continue
 
@@ -253,7 +243,7 @@ def scan_for_risk_terms(root: Path, *, risk_ignore: tuple[str, ...] = (), max_fi
                     return results
 
     if not results:
-        results.append(CheckResult("risk-review", "PASS", "No high-risk terms found outside exempt rail docs."))
+        results.append(CheckResult("risk-review", "PASS", "No high-risk terms found outside configured ignored paths."))
 
     return results
 

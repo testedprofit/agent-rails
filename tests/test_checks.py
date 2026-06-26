@@ -1,4 +1,7 @@
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
+import json
 import sys
 import tempfile
 import unittest
@@ -8,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from agent_rails.checks import render_report, run_checks  # noqa: E402
+from agent_rails.cli import check_command  # noqa: E402
 from agent_rails.templates import TEMPLATES  # noqa: E402
 
 
@@ -78,6 +82,40 @@ class AgentRailsChecksTest(unittest.TestCase):
             results = run_checks(root)
 
         self.assertFalse([result for result in results if result.is_failure])
+
+    def test_readme_risk_terms_are_scanned_by_default(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_templates(root)
+            (root / "README.md").write_text("Production deploy steps go here.\n", encoding="utf-8")
+
+            results = run_checks(root)
+
+        self.assertTrue(
+            any(result.name == "risk-review" and result.path == "README.md" and result.is_warning for result in results)
+        )
+
+    def test_config_can_ignore_expected_risk_terms(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_templates(root)
+            (root / ".agent-rails.json").write_text(json.dumps({"risk_ignore": ["README.md"]}), encoding="utf-8")
+            (root / "README.md").write_text("Production deploy steps go here.\n", encoding="utf-8")
+
+            results = run_checks(root)
+
+        self.assertFalse(any(result.name == "risk-review" and result.path == "README.md" for result in results))
+
+    def test_strict_mode_fails_when_warnings_exist(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_templates(root)
+            (root / "README.md").write_text("Production deploy steps go here.\n", encoding="utf-8")
+
+            with redirect_stdout(StringIO()):
+                exit_code = check_command(root, report_path=None, strict=True)
+
+        self.assertEqual(exit_code, 1)
 
 
 def write_templates(root: Path) -> None:
