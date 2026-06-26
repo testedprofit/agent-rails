@@ -1,6 +1,6 @@
 # Release Notes
 
-## v0.1.0 - Draft
+## v0.1.0 - Released 2026-06-26
 
 Initial public baseline for Agent Rails.
 
@@ -18,7 +18,6 @@ Initial public baseline for Agent Rails.
 ### Not Included
 
 - No PyPI package has been published.
-- No GitHub release has been created.
 - No telemetry, external service, or marketplace listing is included.
 
 ### Verification
@@ -30,9 +29,9 @@ agent-rails check --strict --report agent-rails-report.md
 
 ## Current Gate Status
 - Gate name: Release notes
-- Status: READY FOR REVIEW
-- Evidence produced: Draft v0.1.0 notes, local tests, and strict self-check.
-- Human review required: Yes before creating a GitHub release or publishing to PyPI.
-- Stop conditions: Do not publish packages, create releases, or claim production security coverage without review.
-- Next safe action: Review notes and decide whether to tag v0.1.0.
-- Next prompt: Prepare a reviewed v0.1.0 GitHub release draft.
+- Status: COMPLETE
+- Evidence produced: Published GitHub release `v0.1.0`, local tests, strict self-check, and successful CI.
+- Human review required: Yes before publishing to PyPI or claiming production security/compliance coverage.
+- Stop conditions: Do not publish packages, add telemetry, or make security/compliance claims without review.
+- Next safe action: Monitor issues and feedback from the v0.1.0 release.
+- Next prompt: Plan v0.1.1 based on reviewer feedback.

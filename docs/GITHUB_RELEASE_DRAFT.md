@@ -1,8 +1,8 @@
-# GitHub Release Draft
+# GitHub Release Notes
 
 Tag: `v0.1.0`
 Title: `Agent Rails v0.1.0`
-Status: Draft content only, not published
+Status: Published as a prerelease at https://github.com/testedprofit/agent-rails/releases/tag/v0.1.0
 
 ## Summary
 
@@ -51,9 +51,9 @@ python -m pip wheel .
 
 ## Current Gate Status
 - Gate name: Release draft
-- Status: READY FOR REVIEW
-- Evidence produced: Draft GitHub release text for v0.1.0.
-- Human review required: Yes before creating the release or tag.
-- Stop conditions: Do not publish this release, create tags, upload packages, or make security/compliance claims without explicit maintainer approval.
-- Next safe action: Human maintainer reviews and edits this draft.
-- Next prompt: Publish the reviewed v0.1.0 GitHub release.
+- Status: COMPLETE
+- Evidence produced: Published GitHub release text for v0.1.0.
+- Human review required: Yes before publishing packages or making security/compliance claims.
+- Stop conditions: Do not upload packages, add telemetry, or make security/compliance claims without explicit maintainer approval.
+- Next safe action: Monitor issues and feedback.
+- Next prompt: Plan v0.1.1 from release feedback.

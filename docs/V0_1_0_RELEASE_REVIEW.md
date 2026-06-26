@@ -2,7 +2,7 @@
 
 Review date: 2026-06-26
 Candidate commit: `684f76f` plus release-review documentation changes
-Release status: Ready for human release review, not published
+Release status: Published as a GitHub prerelease at https://github.com/testedprofit/agent-rails/releases/tag/v0.1.0
 
 ## Scope Reviewed
 
@@ -59,21 +59,20 @@ success
 
 ## Recommendation
 
-This repo is reasonable to tag as a `v0.1.0` alpha after human review. It should be positioned as an AI workflow hygiene utility, not as a complete security product.
+This repo was tagged and released as `v0.1.0` after human approval. It should continue to be positioned as an AI workflow hygiene utility, not as a complete security product.
 
-Recommended release action:
+Recommended post-release action:
 
-1. Review `RELEASE_NOTES.md`.
-2. Review `docs/GITHUB_RELEASE_DRAFT.md`.
-3. Confirm no secrets or private data are present.
-4. Create a signed or normal git tag only after maintainer approval.
-5. Publish a GitHub release only after the tag is approved.
+1. Monitor issues and release feedback.
+2. Keep release claims qualitative until adoption metrics exist.
+3. Do not publish to PyPI without a separate package-release review.
+4. Plan `v0.1.1` around reviewer feedback, PR comments, and severity configuration.
 
 ## Current Gate Status
 - Gate name: Release review
-- Status: READY FOR REVIEW
-- Evidence produced: Tests, compile check, strict self-check, init smoke test, wheel build, latest GitHub Action status, and release-review document.
-- Human review required: Yes before creating a tag or GitHub release.
-- Stop conditions: Do not create tags, publish releases, upload packages, or claim production security/compliance coverage without explicit approval.
-- Next safe action: Human maintainer reviews the draft release body.
-- Next prompt: If approved, create a v0.1.0 git tag and GitHub release.
+- Status: COMPLETE
+- Evidence produced: Tests, compile check, strict self-check, init smoke test, wheel build, successful CI, tag `v0.1.0`, and published GitHub release.
+- Human review required: Yes before PyPI publishing or production/security/compliance claims.
+- Stop conditions: Do not upload packages, add telemetry, or claim production security/compliance coverage without explicit approval.
+- Next safe action: Monitor post-release issues and feedback.
+- Next prompt: Plan v0.1.1 from release feedback.
